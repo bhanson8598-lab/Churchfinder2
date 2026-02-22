@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Church Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8f6f3;
+      --surface: #ffffff;
+      --text: #1a1a1a;
+      --text-muted: #5c5c5c;
+      --accent: #1e3a5f;
+      --accent-hover: #152a47;
+      --border: #e5e2dd;
+      --radius: 12px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.06);
+      --shadow-hover: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 1.25rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 0 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(1.75rem, 5vw, 2.25rem);
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .tagline {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-top: 0.35rem;
+    }
+
+    .search-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+
+    .field {
+      flex: 1 1 200px;
+      min-width: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.4rem;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.2);
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235c5c5c' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.25rem;
+    }
+
+    .btn-search {
+      flex: 0 0 auto;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: white;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-search:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-search:active {
+      transform: scale(0.98);
+    }
+
+    .btn-search:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .view-tabs {
+      display: flex;
+      gap: 0.25rem;
+      margin-top: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .view-tab {
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      font-family: inherit;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .view-tab:hover {
+      color: var(--text);
+    }
+
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .results-section {
+      margin-top: 1rem;
+    }
+
+    .results-section.hidden {
+      display: none;
+    }
+
+    #map-container {
+      width: 100%;
+      height: 400px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--border);
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    .list-view {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .church-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.2s;
+    }
+
+    .church-card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    .church-name {
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--text);
+    }
+
+    .church-name a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .church-name a:hover {
+      text-decoration: underline;
+    }
+
+    .church-address {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .church-distance {
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-top: 0.35rem;
+    }
+
+    .message {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .message.error {
+      color: #b53c3c;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .map-view.hidden,
+    .list-view.hidden {
+      display: none !important;
+    }
+
+    .donate-section {
+      text-align: center;
+      padding: 2rem 1rem;
+      margin-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .donate-btn {
+      display: inline-block;
+      padding: 0.9rem 2rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.08em;
+      color: white;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .donate-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .donate-btn:active {
+      transform: scale(0.98);
+    }
+
+    .donate-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      max-width: 420px;
+      margin: 1rem auto 0;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Church Finder</h1>
+      <p class="tagline">Find churches near you by denomination</p>
+    </header>
+
+    <div class="search-card">
+      <form id="search-form">
+        <div class="form-row">
+          <div class="field">
+            <label for="location">Location (city or zip code)</label>
+            <input type="text" id="location" name="location" placeholder="e.g. Nashville, TN or 37203" required autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="denomination">Denomination</label>
+            <select id="denomination" name="denomination" required>
+              <option value="">Select denomination</option>
+              <option value="Catholic">Catholic</option>
+              <option value="Baptist">Baptist</option>
+              <option value="Methodist">Methodist</option>
+              <option value="Lutheran">Lutheran</option>
+              <option value="Presbyterian">Presbyterian</option>
+              <option value="Episcopal">Episcopal</option>
+              <option value="Pentecostal">Pentecostal</option>
+              <option value="Non-denominational">Non-denominational</option>
+              <option value="Assembly of God">Assembly of God</option>
+            </select>
+          </div>
+          <div class="field">
+            <button type="submit" class="btn-search" id="btn-search">Find Churches</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="results-section hidden" id="results-section">
+      <div class="view-tabs">
+        <button type="button" class="view-tab active" data-view="list">List</button>
+        <button type="button" class="view-tab" data-view="map">Map</button>
+      </div>
+
+      <div class="list-view" id="list-view">
+        <div id="church-list"></div>
+      </div>
+
+      <div class="map-view hidden" id="map-view">
+        <div id="map-container">
+          <div id="map"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="message" id="message" aria-live="polite"></div>
+
+    <section class="donate-section" aria-label="Donate">
+      <a href="https://venmo.com/u/Brian-Hanson-28" target="_blank" rel="noopener noreferrer" class="donate-btn">DONATE</a>
+      <p class="donate-note">All donations are used to keep Church Finder running. Remaining dollars are donated to local churches.</p>
+    </section>
+  </div>
+
+  <!-- Replace AIzaSyBz5Hu1ddevStxbHGRVSQDpmN_PZmKOqE4 with your actual Google API key -->
+  <!-- Enable: Maps JavaScript API, Places API, Geocoding API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBz5Hu1ddevStxbHGRVSQDpmN_PZmKOqE4&libraries=places"></script>
+  <script>
+    (function() {
+      const API_KEY_PLACEHOLDER = 'AIzaSyBz5Hu1ddevStxbHGRVSQDpmN_PZmKOqE4';
+      const form = document.getElementById('search-form');
+      const locationInput = document.getElementById('location');
+      const denominationSelect = document.getElementById('denomination');
+      const btnSearch = document.getElementById('btn-search');
+      const resultsSection = document.getElementById('results-section');
+      const churchList = document.getElementById('church-list');
+      const messageEl = document.getElementById('message');
+      const viewTabs = document.querySelectorAll('.view-tab');
+      const listView = document.getElementById('list-view');
+      const mapView = document.getElementById('map-view');
+
+      let map = null;
+      let markers = [];
+      let infoWindow = null;
+      let lastResults = [];
+      let searchCenter = null;
+
+      function showMessage(text, isError) {
+        messageEl.textContent = text;
+        messageEl.className = 'message' + (isError ? ' error' : '');
+        messageEl.style.display = text ? 'block' : 'none';
+      }
+
+      function setLoading(loading) {
+        btnSearch.disabled = loading;
+        btnSearch.innerHTML = loading ? '<span class="loading"></span> Searching…' : 'Find Churches';
+      }
+
+      function geocodeLocation(locationStr) {
+        return new Promise((resolve, reject) => {
+          const geocoder = new google.maps.Geocoder();
+          geocoder.geocode({ address: locationStr }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+              const loc = results[0].geometry.location;
+              resolve({ lat: loc.lat(), lng: loc.lng() });
+            } else {
+              reject(new Error('Could not find that location. Try a city name or zip code.'));
+            }
+          });
+        });
+      }
+
+      function getDistanceMiles(lat1, lng1, lat2, lng2) {
+        if (lat2 == null || lng2 == null) return null;
+        const R = 3959; // Earth radius in miles
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+          Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      }
+
+      function sortPlacesByDistance(places, center) {
+        return places
+          .map(p => ({
+            ...p,
+            distance: getDistanceMiles(center.lat, center.lng, p.lat, p.lng),
+          }))
+          .sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
+      }
+
+      function searchPlaces(center, denomination) {
+        return new Promise((resolve, reject) => {
+          const query = denomination === 'Non-denominational'
+            ? 'non-denominational Christian church'
+            : denomination + ' church';
+          const request = {
+            query: query,
+            location: new google.maps.LatLng(center.lat, center.lng),
+          };
+          const service = new google.maps.places.PlacesService(document.createElement('div'));
+          service.textSearch(request, (results, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length) {
+              const places = results.slice(0, 15).map(p => ({
+                id: p.place_id,
+                name: p.name,
+                address: p.formatted_address || '',
+                lat: p.geometry?.location?.lat(),
+                lng: p.geometry?.location?.lng(),
+              }));
+              resolve(places);
+            } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+              resolve([]);
+            } else {
+              reject(new Error('Search failed. Check your API key and that Places API is enabled.'));
+            }
+          });
+        });
+      }
+
+      function getPlaceWebsite(service, placeId) {
+        return new Promise((resolve) => {
+          service.getDetails(
+            { placeId: placeId, fields: ['website'] },
+            (place, status) => {
+              if (status === google.maps.places.PlacesServiceStatus.OK && place && place.website) {
+                resolve(place.website);
+              } else {
+                resolve(null);
+              }
+            }
+          );
+        });
+      }
+
+      function enrichPlacesWithWebsites(places) {
+        if (!places.length) return Promise.resolve(places);
+        const service = new google.maps.places.PlacesService(document.createElement('div'));
+        return Promise.all(
+          places.map(p =>
+            getPlaceWebsite(service, p.id).then(website => ({ ...p, website: website || undefined }))
+          )
+        );
+      }
+
+      function renderList(places) {
+        churchList.innerHTML = '';
+        if (!places.length) {
+          churchList.innerHTML = '<p class="message">No churches found for this area. Try a different location or denomination.</p>';
+          return;
+        }
+        places.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'church-card';
+          const nameContent = p.website
+            ? '<a href="' + escapeAttr(p.website) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(p.name) + '</a>'
+            : escapeHtml(p.name);
+          const distanceStr = p.distance != null ? (p.distance < 0.05 ? '< 0.1 mi' : p.distance.toFixed(1) + ' mi') : '';
+          card.innerHTML = '<div class="church-name">' + nameContent + '</div>' +
+            (p.address ? '<div class="church-address">' + escapeHtml(p.address) + '</div>' : '') +
+            (distanceStr ? '<div class="church-distance">' + distanceStr + '</div>' : '');
+          churchList.appendChild(card);
+        });
+      }
+
+      function escapeHtml(s) {
+        const div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      function escapeAttr(s) {
+        const div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML.replace(/"/g, '&quot;');
+      }
+
+      function initMap(center, places) {
+        if (!map) {
+          map = new google.maps.Map(document.getElementById('map'), {
+            center: center,
+            zoom: 12,
+            styles: [
+              { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+            ],
+          });
+          infoWindow = new google.maps.InfoWindow();
+        } else {
+          map.setCenter(center);
+        }
+
+        markers.forEach(m => m.setMap(null));
+        markers = [];
+
+        places.forEach(p => {
+          if (p.lat == null || p.lng == null) return;
+          const marker = new google.maps.Marker({
+            position: { lat: p.lat, lng: p.lng },
+            map: map,
+            title: p.name,
+          });
+          marker.addListener('click', () => {
+            infoWindow.setContent('<strong>' + escapeHtml(p.name) + '</strong><br>' + escapeHtml(p.address || ''));
+            infoWindow.open(map, marker);
+          });
+          markers.push(marker);
+        });
+
+        if (places.length === 1 && places[0].lat != null) {
+          map.setZoom(14);
+        }
+      }
+
+      function switchView(view) {
+        viewTabs.forEach(t => {
+          t.classList.toggle('active', t.getAttribute('data-view') === view);
+        });
+        listView.classList.toggle('hidden', view !== 'list');
+        mapView.classList.toggle('hidden', view !== 'map');
+        if (view === 'map' && map && lastResults.length) {
+          initMap(searchCenter, lastResults);
+        }
+      }
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const locationStr = locationInput.value.trim();
+        const denomination = denominationSelect.value;
+        if (!locationStr || !denomination) return;
+
+        const keyScript = document.querySelector('script[src*="maps.googleapis.com"]');
+        const src = keyScript ? keyScript.getAttribute('src') : '';
+        if (src.includes(API_KEY_PLACEHOLDER)) {
+          showMessage('Please add your Google API key in the script tag (replace AIzaSyBz5Hu1ddevStxbHGRVSQDpmN_PZmKOqE4).', true);
+          return;
+        }
+
+        setLoading(true);
+        showMessage('');
+
+        try {
+          const center = await geocodeLocation(locationStr);
+          searchCenter = center;
+          let places = await searchPlaces(center, denomination);
+          places = await enrichPlacesWithWebsites(places);
+          places = sortPlacesByDistance(places, center);
+          lastResults = places;
+
+          renderList(places);
+          initMap(center, places);
+          resultsSection.classList.remove('hidden');
+          switchView('list');
+          showMessage(places.length ? 'Found ' + places.length + ' church(es).' : 'No churches found for this search.');
+        } catch (err) {
+          showMessage(err.message || 'Something went wrong.', true);
+          resultsSection.classList.add('hidden');
+        } finally {
+          setLoading(false);
+        }
+      });
+
+      viewTabs.forEach(tab => {
+        tab.addEventListener('click', () => switchView(tab.getAttribute('data-view')));
+      });
+    })();
+  </script>
+</body>
+</html>
