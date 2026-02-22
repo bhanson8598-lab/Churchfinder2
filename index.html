@@ -378,12 +378,12 @@
     <div class="message" id="message" aria-live="polite"></div>
   </div>
 
-  <!-- Replace AIzaSyBz5Hu1ddevStxbHGRVSQDpmN_PZmKOqE4 with your actual Google API key -->
+  <!-- Replace AIzaSyD-ST9bkbpapvlYoHnLCl4ySUXt63nyquA with your actual Google API key -->
   <!-- Enable: Maps JavaScript API, Places API, Geocoding API -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBz5Hu1ddevStxbHGRVSQDpmN_PZmKOqE4&libraries=places"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-ST9bkbpapvlYoHnLCl4ySUXt63nyquA&libraries=places"></script>
   <script>
     (function() {
-      const API_KEY_PLACEHOLDER = 'AIzaSyBz5Hu1ddevStxbHGRVSQDpmN_PZmKOqE4';
+      const API_KEY_PLACEHOLDER = 'AIzaSyD-ST9bkbpapvlYoHnLCl4ySUXt63nyquA';
       const form = document.getElementById('search-form');
       const locationInput = document.getElementById('location');
       const denominationSelect = document.getElementById('denomination');
@@ -590,7 +590,7 @@
         const keyScript = document.querySelector('script[src*="maps.googleapis.com"]');
         const src = keyScript ? keyScript.getAttribute('src') : '';
         if (src.includes(API_KEY_PLACEHOLDER)) {
-          showMessage('Please add your Google API key in the script tag (replace AIzaSyBz5Hu1ddevStxbHGRVSQDpmN_PZmKOqE4).', true);
+          showMessage('Please add your Google API key in the script tag (replace AIzaSyD-ST9bkbpapvlYoHnLCl4ySUXt63nyquA).', true);
           return;
         }
 
