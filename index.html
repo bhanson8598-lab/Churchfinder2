@@ -275,6 +275,46 @@
     .list-view.hidden {
       display: none !important;
     }
+
+    .donate-section {
+      text-align: center;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .btn-donate {
+      display: inline-block;
+      padding: 0.85rem 2rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.08em;
+      color: white;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-donate:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-donate:active {
+      transform: scale(0.98);
+    }
+
+    .donate-note {
+      display: block;
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 <body>
@@ -283,6 +323,11 @@
       <h1>Church Finder</h1>
       <p class="tagline">Find churches near you by denomination</p>
     </header>
+
+    <div class="donate-section">
+      <a href="https://venmo.com/u/Brian-Hanson-28" target="_blank" rel="noopener noreferrer" class="btn-donate">DONATE</a>
+      <span class="donate-note">All donations are used to keep Church Finder running. Remaining dollars are donated to local churches.</span>
+    </div>
 
     <div class="search-card">
       <form id="search-form">
